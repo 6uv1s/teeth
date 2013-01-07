@@ -1,0 +1,24 @@
+overrides:
+  ceph:
+    fs: btrfs
+    log-whitelist:
+    - slow request
+
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+
+tasks:
+- ceph:
+    branch: wip-msgr-delays
+    conf:
+      client:
+        ms_inject_delay_probability: 1
+        ms_inject_delay_type: osd
+        ms_inject_delay_max: 5
+- ceph-fuse:
+- workunit:
+    clients:
+      all:
+        - kernel_untar_build.sh

@@ -1,0 +1,18 @@
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+
+tasks:
+- ceph:
+    conf:
+      client.0:
+        ms_inject_delay_type: osd
+        ms_inject_delay_max: 1
+        ms_inject_delay_probability: 0.2
+- ceph-fuse:
+- pexec:
+    client.0:
+      - cd /tmp/cephtest/mnt.0
+      - mkdir fsstress-testdir
+      - /usr/lib/ltp/testcases/bin/fsstress -s 1356575221 -d fsstress-testdir -l 1 -n 1000 -p 10 -v

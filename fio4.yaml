@@ -1,0 +1,16 @@
+roles:
+- [mon.0, mds.0]
+- [osd.0, client.0]
+- [osd.1, client.1]
+- [osd.2, client.2]
+
+tasks:
+- ceph:
+    branch: wip-mds
+- ceph-fuse: [client.0, client.1, client.2]
+- workunit:
+    clients:
+      all: [suites/fio.sh]
+    branch: wip-mds
+    subdir: tmp-workunit-testdir
+interactive-on-error: true

@@ -1,0 +1,29 @@
+overrides:
+  ceph:
+    fs: btrfs
+    log-whitelist:
+    - slow request
+
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+
+kernel:
+  client.0:
+    sha1: 049f1ac23a1b00e6613ec030422a1ab7e91e4154
+
+tasks:
+- ceph:
+- ceph-fuse:
+- pexec:
+    sudo: true
+    client.0:
+      - cd /tmp/cephtest/mnt.0
+      - wget -q http://teuthology/qa/linux-3.2.9.tar.bz2
+      - mkdir t
+      - cd t
+      - tar xfj ../linux-3.2.9.tar.bz2
+      - cd linux-3.2.9
+      - make defconfig
+      - make -j8

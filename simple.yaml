@@ -1,0 +1,8 @@
+roles:
+- [mon.0, mds.0, osd.0, client.0]
+- [client.1]
+
+tasks:
+- ceph:
+- ceph-fuse: [client.0, client.1]
+- interactive:

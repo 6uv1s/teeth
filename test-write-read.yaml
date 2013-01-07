@@ -1,0 +1,19 @@
+roles:
+- [mon.0, mon.1, mon.2, mds.0, osd.0, osd.1, osd.2]
+- [client.0]
+- [client.1]
+
+tasks:
+- chef:
+- ceph:
+- ceph-fuse:
+- pexec:
+    sudo: true
+    client.0:
+      - for i in $(seq 1 1048576); do
+      -   echo foo >> bar
+      - done
+    client.1:
+      - sleep 4
+      - tail -f bar > /dev/null
+interactive-on-error: true

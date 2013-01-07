@@ -1,0 +1,35 @@
+roles:
+- [osd.0, osd.1, osd.2, mon.0, mon.1, mon.2, mds.a, client.0]
+- [client.1]
+- [client.2]
+
+tasks:
+- ceph:
+    branch: wip-3637
+    conf:
+      mds:
+        debug mds: 20
+        debug ms: 1
+      client:
+        debug client: 20
+- ceph-fuse:
+- pexec:
+    clients:
+      - cd /tmp/cephtest
+      - wget http://teuthology/qa/ior.tbz2
+      - tar xvfj ior.tbz2
+      - cd ior
+      - ./configure
+      - make
+      - make install DESTDIR=/tmp/cephtest/binary/
+      - cd /tmp/cephtest/
+      - rm ior.tbz2
+      - rm -r ior
+      - ln -s /tmp/cephtest/mnt.* /tmp/cephtest/gmnt
+- ssh_keys:
+- mpi:
+    nodes: [client.0, client.1, client.2]
+    exec: strace -o /tmp/ior.strace -e trace=file /tmp/cephtest/binary/usr/local/bin/ior -e -w -r -W -b 10m -a POSIX -o /tmp/cephtest/gmnt/ior.testfile
+- pexec:
+    all:
+      - rm /tmp/cephtest/gmnt

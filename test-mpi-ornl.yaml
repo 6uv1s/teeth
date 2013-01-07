@@ -1,0 +1,33 @@
+roles:
+- [osd.0, mds.a, client.0]
+- [osd.1, mon.0, client.1]
+- [osd.2, mon.1, mon.2, client.2]
+
+tasks:
+- ssh_keys:
+- ceph:
+- kclient:
+- pexec:
+    clients:
+      - cd /tmp/cephtest
+      - wget http://teuthology/qa/ior.tbz2
+      - tar xvfj ior.tbz2
+      - cd ior
+      - ./configure
+      - make
+      - make install DESTDIR=/tmp/cephtest/binary/
+      - cd /tmp/cephtest/
+      - rm ior.tbz2
+      - rm -r ior
+      - ln -s /tmp/cephtest/mnt.* /tmp/cephtest/gmnt
+- pexec:
+    sudo: true
+    clients:
+      - chmod 1777 /tmp/cephtest/gmnt
+    
+- mpi:
+    nodes: [client.0, client.1, client.2]
+    exec: strace -o /tmp/ior.strace /tmp/cephtest/binary/usr/local/bin/ior -a POSIX -e -F -b 32g -t 1m -r -w -C -i 3 -d 5 -e -o /tmp/cephtest/gmnt/ior.testfile
+- pexec:
+    all:
+      - rm /tmp/cephtest/gmnt

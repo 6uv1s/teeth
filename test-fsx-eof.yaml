@@ -1,0 +1,26 @@
+kernel:
+  branch: wip-3681
+
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+tasks:
+- ceph:
+    conf:
+      mds.a:
+        debug mds: 20
+        debug ms: 1
+- kclient:
+- pexec:
+    sudo: true
+    client.0:
+      - cd /tmp/cephtest/mnt.0
+      - echo 'module libceph +p' > /sys/kernel/debug/dynamic_debug/control
+      - echo 'module ceph +p' > /sys/kernel/debug/dynamic_debug/control
+      - wget http://ceph.com/qa/fsx.c
+      - gcc fsx.c -o fsx
+      - ./fsx 1MB -N 50000 -p 10000 -l 104576
+      - ./fsx 1MB -N 50000 -p 10000 -l 1045760
+      - ./fsx 1MB -N 50000 -p 10000 -l 10457600
+interactive-on-error: true

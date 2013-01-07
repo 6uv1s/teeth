@@ -1,0 +1,26 @@
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2, mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+- [client.1]
+
+tasks:
+- chef:
+- ceph:
+    branch: wip-3625
+- ceph-fuse:
+- pexec:
+    client.0:
+      - cd /tmp/cephtest/mnt.0
+      - umask 0777
+      - for i in $(seq 1 100); do
+      -   barrier
+      -   echo bar > foo$i
+      - done
+    client.1:
+      - cd /tmp/cephtest/mnt.1
+      - umask 0777
+      - for i in $(seq 1 100); do
+      -   barrier
+      -   echo bar > foo$i
+      - done
+interactive-on-error: true

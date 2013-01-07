@@ -1,0 +1,9 @@
+
+roles:
+- [mon.0, mon.1, mon.2, mds.0, osd.0, osd.1, osd.2]
+- [client.0, samba.0]
+- [client.1, samba.1]
+
+tasks:
+- samba:
+- interactive:

@@ -1,0 +1,8 @@
+roles:
+- [mon.0, mds.0, osd.0, osd.1, client.0]
+
+tasks:
+- ceph:
+    path: /home/slang/dev/ceph/build
+- ceph-fuse: [client.0]
+- interactive:

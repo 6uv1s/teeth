@@ -1,0 +1,44 @@
+overrides:
+  ceph:
+    fs: btrfs
+    log-whitelist:
+    - slow request
+
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+
+tasks:
+- ceph:
+- ceph-fuse:
+- pexec:
+    client.0:
+      - /tmp/cephtest/binary/usr/local/bin/ceph --admin-daemon /tmp/cephtest/asok.client.0 config set ms_inject_delay_max 4
+      - /tmp/cephtest/binary/usr/local/bin/ceph --admin-daemon /tmp/cephtest/asok.client.0 config set ms_inject_delay_probability 0.9
+      - /tmp/cephtest/binary/usr/local/bin/ceph --admin-daemon /tmp/cephtest/asok.client.0 config set ms_inject_delay_type client
+      - sudo chmod 777 /tmp/cephtest/mnt.0
+      - sudo chmod +t /tmp/cephtest/mnt.0
+      - cd /tmp/cephtest/mnt.0
+      - "dowork() {"
+      -   for i in $(seq 1 1000); do
+      -       mkdir -p a/b/c$i
+      -   done
+      -   while true; do
+      -     dd if=/dev/zero of=a/b/c$i/$i count=$[1024*10] bs=1024
+      -   done
+      - "}"
+      -   
+      - for i in $(seq 1 8); do
+      -     dowork $i &
+      - done
+      - 
+      - for j in $(seq 1 100000); do
+      -   set +e
+      -   stat a/b/d$j >/dev/null
+      -   if test != 0; then
+      -     echo foofoo > a/b/d$j
+      -   fi
+      -   set -e
+      -   cat a/b/d$j > /dev/null
+      - done

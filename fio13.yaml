@@ -1,0 +1,24 @@
+roles:
+- [mon.0, mds.0]
+- [osd.0, client.0]
+- [osd.1, client.1]
+- [osd.2, client.2]
+- [osd.3, client.3]
+- [osd.4, client.4]
+- [osd.5, client.5]
+- [osd.6, client.6]
+- [osd.7, client.7]
+- [osd.8, client.8]
+- [osd.9, client.9]
+- [osd.10, client.10]
+- [osd.11, client.11]
+
+tasks:
+- ceph:
+    branch: wip-mds
+- ceph-fuse: [client.0, client.1, client.2, client.3, client.4, client.5, client.6, client.7, client.8, client.9, client.10, client.11]
+- workunit:
+    clients:
+      all: [suites/fio.sh]
+    branch: wip-mds
+    subdir: tmp-workunit-testdir

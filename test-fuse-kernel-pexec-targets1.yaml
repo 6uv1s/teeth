@@ -1,0 +1,35 @@
+overrides:
+  ceph:
+    fs: btrfs
+    log-whitelist:
+    - slow request
+
+roles:
+- [mon.a, mon.c, osd.0, osd.1, osd.2]
+- [mon.b, mds.a, osd.3, osd.4, osd.5]
+- [client.0]
+
+targets:
+  ubuntu@plana05.front.sepia.ceph.com: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC4QLrFgiF5oIdiIeB+l40EWRmssMz9SjaNaS46izEtQn9dzF6wcTaqR8JFz7xPpU5b0IH4m3cCCCUfybVZMeyZRh94Xa0knzohzxGEjJzjmaxBhZVJZ0ecXSK724Vy2fnCTpeXo8aAJdPvng06TUy9Fh4RhT6IMHq0xjVUwb4J4GLKse5bumBJXwmrTFh8EMY3vBJ/6+XkRw8ASWBIVMRGGI+QZwlb/UMdf6pcyaDwJNv4nQDeBea+5nwtlyxCjYV/RGo4GoHU/Uit7pF73xJLGDH9kvmDoXKmXBI08wqGA14hVyt5CEHzkNbAy5fUq3yJdzGf5oBlghyTLjsWmf3Z
+  ubuntu@plana14.front.sepia.ceph.com: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCs3IrZeF7C0YL6VU9avVBEyNgKwbiH45BBAuxQMCUyVTsJHy60uThveH1PBt6TuMvRILpujJCYp9kFcLAy+kjyTbZBHZmkoX44wT6AzqLJgGpJzpAEgd3ZpR8Nx9oTuZ0B3le8JFiK90wgJbJrsbpi9x8FtVUZQH+8PilAwza8P6ZSKzwv1dIeCxCqtkZ2oFMIzspLgLLAZ4gkZGfMc43PubouSr4b8TnfTyay4imcJyc6lhAAOhFng6ebcBuCK09QQJ7c3Y5Tgiqh82UqUAO9RTFmeLkXRsWHJ8L1N8+PvtBmQ83neQvql/+cTHz8lDUjomNLOrfUGkj6K4583Tq3
+  ubuntu@plana16.front.sepia.ceph.com: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDI5A8ibfCXo5uFpfa+hLZoUoMjRl54060vpyvkYSeFtVz0iX7rCJRkZBqHiwz940yqs2+qnoczg/SVucIFMZSv/c14V/8hhRNHDK7n0lADYF5tkTs9fupeAQSHEPytW/RxOLlNappd1rd7M56rVxeUMPgkVJAdJoQnkXyhw9KqizSj4vFej4qSKUMfaOlXwxCNjmUrtyBdPkk6kOgWODtgOn6d39Tva0hwn7jfeFaYc/ixNPFgiO5um2Fz3XHJFPMWPSLt5X3eEn54ZTO33B6ybYIgoYGn0kVBl+Wks/VTQkky5wJnbS5mghhPNK/+U0KJ5rcQlIgMGgTrBBROcFw3
+
+tasks:
+- ceph:
+    branch: testing-3490-logging
+- ceph-fuse:
+    client.0:
+      timeout: 20
+      cleanup_on_failure: true
+- pexec:
+    sudo: true
+    client.0:
+      - cd /tmp/cephtest/mnt.0
+      - wget -q http://teuthology/qa/linux-3.2.9.tar.bz2
+      - mkdir t
+      - cd t
+      - tar xfj ../linux-3.2.9.tar.bz2
+      - cd linux-3.2.9
+      - make defconfig
+      - make -j8
+interactive-on-error: true
